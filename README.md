@@ -2,13 +2,19 @@
 
 Next.js + PostgreSQL + Drizzle ORM を使用したプロジェクト管理学習アプリ
 
-## 開発環境
+## 環境構成
 
+### 開発環境
 - **フレームワーク**: Next.js 14 (App Router)
-- **データベース**: PostgreSQL (Docker)
+- **データベース**: PostgreSQL 16 (Docker)
 - **ORM**: Drizzle ORM
 - **スタイリング**: Tailwind CSS
 - **コンテナ**: Docker + Docker Compose
+
+### 本番環境
+- **ホスティング**: Vercel
+- **データベース**: Supabase (PostgreSQL)
+- **デプロイ**: Git Push to Deploy
 
 ## セットアップ
 
@@ -123,3 +129,42 @@ docker-compose down
 docker-compose build --no-cache
 docker-compose up -d
 ```
+
+---
+
+## 本番環境へのデプロイ
+
+詳細な手順は [DEPLOYMENT.md](DEPLOYMENT.md) を参照してください。
+
+### クイックスタート
+
+1. **Supabaseでプロジェクト作成**
+   - https://supabase.com でアカウント作成
+   - 新規プロジェクトを作成
+   - DATABASE_URL と API情報を取得
+
+2. **Vercelでデプロイ**
+   - https://vercel.com でアカウント作成
+   - GitHubリポジトリをインポート
+   - 環境変数を設定:
+     - `DATABASE_URL`
+     - `NEXT_PUBLIC_SUPABASE_URL`
+     - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+3. **デプロイ完了**
+   - https://learn-pm.vercel.app にアクセス
+
+---
+
+## ライセンス
+
+MIT
+
+---
+
+## 参考リンク
+
+- [Next.js ドキュメント](https://nextjs.org/docs)
+- [Drizzle ORM](https://orm.drizzle.team/docs/overview)
+- [Supabase ドキュメント](https://supabase.com/docs)
+- [Vercel ドキュメント](https://vercel.com/docs)

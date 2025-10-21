@@ -5,11 +5,18 @@ export default async function Home() {
   // データベースから全ユーザーを取得
   const allUsers = await db.select().from(users);
 
+  const isProduction = process.env.NODE_ENV === 'production';
+  const environment = isProduction ? 'Production (Vercel + Supabase)' : 'Development (Docker)';
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold mb-8">Next.js + PostgreSQL (Docker)</h1>
+      <h1 className="text-4xl font-bold mb-8">Learn PM</h1>
 
-      <div className="mb-8">
+      <div className="mb-4 px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm">
+        {environment}
+      </div>
+
+      <div className="mb-8 w-full max-w-2xl">
         <h2 className="text-2xl font-semibold mb-4">ユーザー一覧</h2>
         {allUsers.length === 0 ? (
           <p className="text-gray-500">ユーザーがいません</p>
@@ -26,8 +33,8 @@ export default async function Home() {
       </div>
 
       <div className="text-sm text-gray-500">
-        <p>✅ Next.js (Docker) 起動中</p>
-        <p>✅ PostgreSQL (Docker) 接続成功</p>
+        <p>✅ Next.js 起動中</p>
+        <p>✅ PostgreSQL 接続成功</p>
         <p>✅ Drizzle ORM 動作中</p>
       </div>
     </main>
