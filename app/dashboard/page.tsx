@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { supabase } from '@/lib/supabase/client';
 
@@ -13,8 +14,17 @@ type Stats = {
   averageScore: number;
 };
 
+type RecentActivity = {
+  lessonId: number;
+  lessonTitle: string;
+  courseTitle: string;
+  completed: string | null;
+  score: number;
+};
+
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
   const [stats, setStats] = useState<Stats>({
     totalCourses: 0,
     completedCourses: 0,
@@ -22,6 +32,7 @@ export default function DashboardPage() {
     completedLessons: 0,
     averageScore: 0,
   });
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -97,6 +108,47 @@ export default function DashboardPage() {
             completedLessons,
             averageScore,
           });
+
+          // Fetch recent activity - get all lessons info and merge with progress
+          const lessonsResponse = await fetch('/api/lessons/by-course');
+          if (lessonsResponse.ok) {
+            const allLessons = await lessonsResponse.json();
+
+            // Get courses info
+            const coursesResponse = await fetch('/api/courses/stats');
+            const coursesInfo = await coursesResponse.json();
+
+            // Create a map of lesson id to lesson/course info
+            const lessonMap = new Map();
+            allLessons.forEach((lesson: any) => {
+              const course = coursesInfo.courseDetails?.find((c: any) => c.courseId === lesson.courseId);
+              lessonMap.set(lesson.id, {
+                lessonTitle: lesson.title,
+                courseTitle: course?.courseTitle || 'コース',
+              });
+            });
+
+            // Combine progress data with lesson info
+            const activities: RecentActivity[] = progressData
+              .filter((p: any) => p.completed) // Only show completed lessons
+              .map((p: any) => {
+                const lessonInfo = lessonMap.get(p.lessonId);
+                return {
+                  lessonId: p.lessonId,
+                  lessonTitle: lessonInfo?.lessonTitle || 'レッスン',
+                  courseTitle: lessonInfo?.courseTitle || 'コース',
+                  completed: p.completed,
+                  score: p.score || 0,
+                };
+              })
+              .sort((a: any, b: any) => {
+                // Sort by completion date (most recent first)
+                return new Date(b.completed).getTime() - new Date(a.completed).getTime();
+              })
+              .slice(0, 10); // Show the 10 most recent
+
+            setRecentActivity(activities);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch stats:', error);
@@ -107,6 +159,15 @@ export default function DashboardPage() {
 
     fetchStats();
   }, [user]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('Failed to sign out:', error);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -144,16 +205,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent Activity */}
-        <div className="bg-white rounded-lg shadow p-6 mb-12">
-          <h2 className="text-2xl font-bold mb-4">最近の学習</h2>
-          <div className="text-gray-500 text-center py-8">
-            学習履歴がまだありません
-          </div>
-        </div>
-
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 mb-12">
           <h2 className="text-2xl font-bold mb-4">クイックアクション</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link
@@ -176,11 +229,58 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Account Settings */}
+        {/* Recent Activity */}
+        <div className="bg-white rounded-lg shadow p-6 mb-12">
+          <h2 className="text-2xl font-bold mb-4">最近の学習</h2>
+          {loading ? (
+            <div className="text-gray-500 text-center py-8">読み込み中...</div>
+          ) : recentActivity.length === 0 ? (
+            <div className="text-gray-500 text-center py-8">
+              学習履歴がまだありません
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {recentActivity.map((activity) => (
+                <div
+                  key={`${activity.lessonId}-${activity.completed}`}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-900">{activity.lessonTitle}</div>
+                    <div className="text-sm text-gray-500">{activity.courseTitle}</div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <div className="text-sm text-gray-500">スコア</div>
+                      <div className="text-lg font-semibold text-purple-600">{activity.score}%</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-gray-500">完了日</div>
+                      <div className="text-sm text-gray-700">
+                        {activity.completed
+                          ? new Date(activity.completed).toLocaleDateString('ja-JP', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })
+                          : '-'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Logout */}
         <div className="mt-6 text-center">
-          <Link href="/dashboard/settings" className="text-blue-600 hover:text-blue-800 text-sm">
-            アカウント設定
-          </Link>
+          <button
+            onClick={handleLogout}
+            className="text-gray-600 hover:text-gray-800 text-sm underline"
+          >
+            ログアウト
+          </button>
         </div>
       </div>
     </main>
