@@ -4,6 +4,8 @@ import { eq, and } from 'drizzle-orm';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import QuizSection from '@/components/QuizSection';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default async function LessonPage({
   params,
@@ -71,12 +73,10 @@ export default async function LessonPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Lesson Content */}
           <div className="bg-white rounded-lg shadow p-8">
-            <div className="prose prose-blue max-w-none">
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: lesson.content.replace(/\n/g, '<br/>'),
-                }}
-              />
+            <div className="prose prose-blue max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-700 prose-li:text-gray-700 prose-table:text-sm">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {lesson.content}
+              </ReactMarkdown>
             </div>
           </div>
 
@@ -86,7 +86,7 @@ export default async function LessonPage({
             {lessonQuestions.length === 0 ? (
               <p className="text-gray-500">このレッスンにはクイズがありません</p>
             ) : (
-              <QuizSection questions={lessonQuestions} />
+              <QuizSection questions={lessonQuestions} lessonId={lesson.id} />
             )}
           </div>
         </div>
