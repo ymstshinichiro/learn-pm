@@ -6,9 +6,10 @@ import { supabase } from '@/lib/supabase/client';
 
 type Question = {
   id: number;
+  type: string; // 'multiple-choice' or 'multiple-answer'
   question: string;
   options: string[];
-  correctAnswer: string;
+  correctAnswer: string[]; // Array to support multiple correct answers
   explanation: string | null;
   order: number;
 };
@@ -30,7 +31,7 @@ export default function QuizSection({
 }) {
   const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]); // Changed to array
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]);
@@ -107,13 +108,30 @@ export default function QuizSection({
 
   const handleAnswerSelect = (answer: string) => {
     if (showResult) return;
-    setSelectedAnswer(answer);
+
+    const isMultipleAnswer = currentQuestion.type === 'multiple-answer';
+
+    if (isMultipleAnswer) {
+      // Toggle selection for multiple answer questions
+      setSelectedAnswers(prev =>
+        prev.includes(answer)
+          ? prev.filter(a => a !== answer)
+          : [...prev, answer]
+      );
+    } else {
+      // Single selection for multiple choice
+      setSelectedAnswers([answer]);
+    }
   };
 
   const handleSubmit = () => {
-    if (!selectedAnswer) return;
+    if (selectedAnswers.length === 0) return;
 
-    const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+    // Check if answer is correct
+    // For multiple answers: all selected must be correct, and all correct must be selected
+    const isCorrect =
+      selectedAnswers.length === currentQuestion.correctAnswer.length &&
+      selectedAnswers.every(ans => currentQuestion.correctAnswer.includes(ans));
 
     let newScore = score;
     let newAnswered = [...answeredQuestions];
@@ -161,7 +179,7 @@ export default function QuizSection({
     if (!isLastQuestion) {
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
-      setSelectedAnswer(null);
+      setSelectedAnswers([]);
       setShowResult(false);
       // Save the new index when moving to next question
       saveProgress(score, answeredQuestions, incorrectQuestions, nextIndex);
@@ -170,7 +188,7 @@ export default function QuizSection({
 
   const handleReset = () => {
     setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
+    setSelectedAnswers([]);
     setShowResult(false);
     setScore(0);
     setAnsweredQuestions([]);
@@ -184,18 +202,21 @@ export default function QuizSection({
     setReviewQuestions(incorrects);
     setReviewMode(true);
     setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
+    setSelectedAnswers([]);
     setShowResult(false);
   };
 
   const handleExitReview = () => {
     setReviewMode(false);
     setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
+    setSelectedAnswers([]);
     setShowResult(false);
   };
 
-  const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+  // Check if the current answer is correct (for display purposes)
+  const isCorrect =
+    selectedAnswers.length === currentQuestion.correctAnswer.length &&
+    selectedAnswers.every(ans => currentQuestion.correctAnswer.includes(ans));
 
   return (
     <div className="space-y-6">
@@ -258,13 +279,20 @@ export default function QuizSection({
 
       {/* Question */}
       <div>
+        <div className="mb-2">
+          {currentQuestion.type === 'multiple-answer' && (
+            <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full">
+              複数選択（正しいものをすべて選んでください）
+            </span>
+          )}
+        </div>
         <h3 className="text-lg font-semibold mb-4">{currentQuestion.question}</h3>
 
         {/* Options */}
         <div className="space-y-3">
           {currentQuestion.options.map((option, index) => {
-            const isSelected = selectedAnswer === option;
-            const isCorrectOption = option === currentQuestion.correctAnswer;
+            const isSelected = selectedAnswers.includes(option);
+            const isCorrectOption = currentQuestion.correctAnswer.includes(option);
 
             let optionClass = 'w-full text-left p-4 rounded-lg border-2 transition-all ';
 
@@ -290,7 +318,9 @@ export default function QuizSection({
                 className={optionClass}
               >
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center mr-3">
+                  <div className={`flex-shrink-0 w-8 h-8 border-2 flex items-center justify-center mr-3 ${
+                    currentQuestion.type === 'multiple-answer' ? 'rounded-md' : 'rounded-full'
+                  }`}>
                     {showResult && isCorrectOption ? (
                       <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                         <path
@@ -363,7 +393,7 @@ export default function QuizSection({
         {!showResult ? (
           <button
             onClick={handleSubmit}
-            disabled={!selectedAnswer}
+            disabled={selectedAnswers.length === 0}
             className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
             回答する

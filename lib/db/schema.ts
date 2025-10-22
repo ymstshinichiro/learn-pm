@@ -38,10 +38,10 @@ export const lessons = pgTable('lessons', {
 export const questions = pgTable('questions', {
   id: serial('id').primaryKey(),
   lessonId: integer('lesson_id').references(() => lessons.id, { onDelete: 'cascade' }).notNull(),
-  type: text('type').notNull().default('multiple-choice'), // 'multiple-choice', 'true-false', etc.
+  type: text('type').notNull().default('multiple-choice'), // 'multiple-choice', 'multiple-answer', 'true-false', etc.
   question: text('question').notNull(),
   options: text('options').array().notNull(), // Array of choice options
-  correctAnswer: text('correct_answer').notNull(),
+  correctAnswer: text('correct_answer').array().notNull(), // Array for multiple correct answers
   explanation: text('explanation'),
   order: integer('order').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
