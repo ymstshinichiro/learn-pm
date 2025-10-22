@@ -70,10 +70,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 ```bash
 # Supabase (既存)
-DATABASE_URL=postgresql://postgres.mslzhnwoujntvjbdikmp:iLs1dev11NeCsqDs@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres
+DATABASE_URL=postgresql://postgres.<PROJECT_ID>:<PASSWORD>@<HOST>:5432/postgres
 
 # Supabase Auth (新規追加)
-NEXT_PUBLIC_SUPABASE_URL=https://mslzhnwoujntvjbdikmp.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://<PROJECT_ID>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<Supabase ダッシュボードから取得>
 ```
 
