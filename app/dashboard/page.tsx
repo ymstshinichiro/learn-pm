@@ -1,19 +1,75 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth/AuthContext';
+import { supabase } from '@/lib/supabase/client';
+
+type Stats = {
+  totalCourses: number;
+  completedCourses: number;
+  totalLessons: number;
+  completedLessons: number;
+  averageScore: number;
+};
 
 export default function DashboardPage() {
   const { user } = useAuth();
-
-  // TODO: Replace with actual progress data from database
-  const mockStats = {
-    totalCourses: 2,
+  const [stats, setStats] = useState<Stats>({
+    totalCourses: 0,
     completedCourses: 0,
-    totalLessons: 4,
+    totalLessons: 0,
     completedLessons: 0,
     averageScore: 0,
-  };
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      if (!user) return;
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        // Fetch progress data
+        const response = await fetch('/api/progress', {
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+        });
+
+        if (response.ok) {
+          const progressData = await response.json();
+
+          // Fetch course/lesson counts
+          const coursesResponse = await fetch('/api/courses/stats');
+          const coursesData = await coursesResponse.json();
+
+          // Calculate stats
+          const completedLessons = progressData.filter((p: any) => p.completed).length;
+          const totalScore = progressData.reduce((sum: number, p: any) => sum + (p.score || 0), 0);
+          const averageScore = progressData.length > 0
+            ? Math.round(totalScore / progressData.length)
+            : 0;
+
+          setStats({
+            totalCourses: coursesData.totalCourses || 0,
+            completedCourses: 0, // TODO: Calculate from completed lessons
+            totalLessons: coursesData.totalLessons || 0,
+            completedLessons,
+            averageScore,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchStats();
+  }, [user]);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -29,7 +85,7 @@ export default function DashboardPage() {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-sm text-gray-500 mb-1">コース進捗</div>
             <div className="text-3xl font-bold text-blue-600">
-              {mockStats.completedCourses}/{mockStats.totalCourses}
+              {loading ? '...' : `${stats.completedCourses}/${stats.totalCourses}`}
             </div>
             <div className="text-sm text-gray-600 mt-2">完了したコース</div>
           </div>
@@ -37,7 +93,7 @@ export default function DashboardPage() {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-sm text-gray-500 mb-1">レッスン進捗</div>
             <div className="text-3xl font-bold text-green-600">
-              {mockStats.completedLessons}/{mockStats.totalLessons}
+              {loading ? '...' : `${stats.completedLessons}/${stats.totalLessons}`}
             </div>
             <div className="text-sm text-gray-600 mt-2">完了したレッスン</div>
           </div>
@@ -45,7 +101,7 @@ export default function DashboardPage() {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-sm text-gray-500 mb-1">平均スコア</div>
             <div className="text-3xl font-bold text-purple-600">
-              {mockStats.averageScore}%
+              {loading ? '...' : `${stats.averageScore}%`}
             </div>
             <div className="text-sm text-gray-600 mt-2">全レッスンの平均</div>
           </div>
