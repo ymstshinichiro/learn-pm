@@ -85,20 +85,35 @@ export default function QuizSection({
     let newAnswered = [...answeredQuestions];
     let newIncorrect = [...incorrectQuestions];
 
-    if (!answeredQuestions.includes(currentQuestion.id)) {
-      newAnswered.push(currentQuestion.id);
+    // In review mode, allow re-answering questions
+    if (reviewMode) {
       if (isCorrect) {
-        newScore = score + 1;
-      } else {
-        if (!incorrectQuestions.includes(currentQuestion.id)) {
-          newIncorrect.push(currentQuestion.id);
+        // Remove from incorrect list if answered correctly
+        newIncorrect = newIncorrect.filter(id => id !== currentQuestion.id);
+        // Update score if this was previously incorrect
+        if (incorrectQuestions.includes(currentQuestion.id)) {
+          newScore = score + 1;
         }
       }
-      setScore(newScore);
-      setAnsweredQuestions(newAnswered);
-      setIncorrectQuestions(newIncorrect);
-      saveProgress(newScore, newAnswered, newIncorrect, currentQuestionIndex);
+      // If still incorrect, keep it in the incorrect list (already there)
+    } else {
+      // Normal mode: only process if not already answered
+      if (!answeredQuestions.includes(currentQuestion.id)) {
+        newAnswered.push(currentQuestion.id);
+        if (isCorrect) {
+          newScore = score + 1;
+        } else {
+          if (!incorrectQuestions.includes(currentQuestion.id)) {
+            newIncorrect.push(currentQuestion.id);
+          }
+        }
+      }
     }
+
+    setScore(newScore);
+    setAnsweredQuestions(newAnswered);
+    setIncorrectQuestions(newIncorrect);
+    saveProgress(newScore, newAnswered, newIncorrect, currentQuestionIndex);
 
     setShowResult(true);
   };
