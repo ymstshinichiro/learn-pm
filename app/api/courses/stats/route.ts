@@ -1,23 +1,36 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { courses, lessons } from '@/lib/db/schema';
-import { sql } from 'drizzle-orm';
+import { sql, eq } from 'drizzle-orm';
 
 export async function GET() {
   try {
-    // Count total courses
-    const courseCount = await db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(courses);
+    // Get all courses with their lesson counts
+    const allCourses = await db.select().from(courses);
+
+    const coursesWithLessonCount = await Promise.all(
+      allCourses.map(async (course) => {
+        const lessonCount = await db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(lessons)
+          .where(eq(lessons.courseId, course.id));
+
+        return {
+          courseId: course.id,
+          lessonCount: lessonCount[0]?.count || 0,
+        };
+      })
+    );
 
     // Count total lessons
-    const lessonCount = await db
+    const totalLessonCount = await db
       .select({ count: sql<number>`count(*)::int` })
       .from(lessons);
 
     return NextResponse.json({
-      totalCourses: courseCount[0]?.count || 0,
-      totalLessons: lessonCount[0]?.count || 0,
+      totalCourses: allCourses.length,
+      totalLessons: totalLessonCount[0]?.count || 0,
+      courseDetails: coursesWithLessonCount,
     });
   } catch (error) {
     console.error('Error fetching course stats:', error);
