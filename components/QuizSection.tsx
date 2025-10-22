@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/lib/auth/AuthContext';
+import { supabase } from '@/lib/supabase/client';
 
 type Question = {
   id: number;
@@ -26,6 +28,7 @@ export default function QuizSection({
   questions: Question[];
   lessonId: number;
 }) {
+  const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -35,7 +38,7 @@ export default function QuizSection({
   const [reviewMode, setReviewMode] = useState(false);
   const [reviewQuestions, setReviewQuestions] = useState<Question[]>([]);
 
-  const storageKey = `quiz-progress-lesson-${lessonId}`;
+  const storageKey = `quiz-progress-${lessonId}`;
 
   // Load progress from LocalStorage
   useEffect(() => {
@@ -51,8 +54,8 @@ export default function QuizSection({
     }
   }, [storageKey, questions.length]);
 
-  // Save progress to LocalStorage
-  const saveProgress = (newScore: number, newAnswered: number[], newIncorrect: number[], questionIndex: number) => {
+  // Save progress to LocalStorage and DB
+  const saveProgress = async (newScore: number, newAnswered: number[], newIncorrect: number[], questionIndex: number) => {
     const progress: QuizProgress = {
       score: newScore,
       answeredQuestions: newAnswered,
@@ -60,7 +63,38 @@ export default function QuizSection({
       currentQuestionIndex: questionIndex,
       lastUpdated: new Date().toISOString(),
     };
+
+    // Save to LocalStorage
     localStorage.setItem(storageKey, JSON.stringify(progress));
+
+    // Save to DB if user is logged in
+    if (user) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const completed = newAnswered.length >= questions.length;
+          const scorePercentage = questions.length > 0
+            ? Math.round((newScore / questions.length) * 100)
+            : 0;
+
+          await fetch('/api/progress', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              lessonId,
+              score: scorePercentage,
+              completed,
+            }),
+          });
+        }
+      } catch (error) {
+        console.error('Failed to save progress to DB:', error);
+        // Continue even if DB save fails - LocalStorage is the fallback
+      }
+    }
   };
 
   const currentQuestions = reviewMode ? reviewQuestions : questions;
