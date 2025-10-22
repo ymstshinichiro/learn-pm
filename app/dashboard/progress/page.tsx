@@ -1,33 +1,146 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { db } from '@/lib/db';
-import { courses, lessons } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { useAuth } from '@/lib/auth/AuthContext';
+import { supabase } from '@/lib/supabase/client';
 
-export default async function ProgressPage() {
-  // Fetch all courses and their lessons
-  const allCourses = await db.select().from(courses);
+type Lesson = {
+  id: number;
+  title: string;
+  slug: string;
+  order: number;
+};
 
-  const coursesWithLessons = await Promise.all(
-    allCourses.map(async (course) => {
-      const courseLessons = await db
-        .select()
-        .from(lessons)
-        .where(eq(lessons.courseId, course.id))
-        .orderBy(lessons.order);
+type CourseWithLessons = {
+  id: number;
+  slug: string;
+  title: string;
+  description: string | null;
+  lessons: Lesson[];
+};
 
-      return {
-        ...course,
-        lessons: courseLessons,
-      };
-    })
-  );
+type Progress = {
+  lessonId: number;
+  score: number;
+  completed: string | null;
+};
 
-  // TODO: Replace with actual user progress from database
-  // For now, we'll read from localStorage on client side
-  const mockProgress = {
-    // This will be populated from database in Phase 2
-    // Format: { lessonId: { score, answeredQuestions, completedAt } }
-  };
+export default function ProgressPage() {
+  const { user } = useAuth();
+  const [coursesWithLessons, setCoursesWithLessons] = useState<CourseWithLessons[]>([]);
+  const [progressData, setProgressData] = useState<Progress[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          setLoading(false);
+          return;
+        }
+
+        // Fetch user progress
+        const progressResponse = await fetch('/api/progress', {
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+        });
+
+        if (progressResponse.ok) {
+          const progress = await progressResponse.json();
+          setProgressData(progress);
+        }
+
+        // Fetch all courses
+        const coursesResponse = await fetch('/api/courses/stats');
+        if (coursesResponse.ok) {
+          const coursesData = await coursesResponse.json();
+
+          // Fetch all lessons
+          const lessonsResponse = await fetch('/api/lessons/by-course');
+          if (lessonsResponse.ok) {
+            const allLessons = await lessonsResponse.json();
+
+            // Group lessons by course
+            const coursesMap = new Map();
+            coursesData.courseDetails?.forEach((course: any) => {
+              coursesMap.set(course.courseId, {
+                id: course.courseId,
+                slug: course.courseSlug,
+                title: course.courseTitle,
+                description: course.courseDescription,
+                lessons: [],
+              });
+            });
+
+            // Add lessons to courses
+            allLessons.forEach((lesson: any) => {
+              const course = coursesMap.get(lesson.courseId);
+              if (course) {
+                course.lessons.push({
+                  id: lesson.id,
+                  title: lesson.title,
+                  slug: lesson.slug,
+                  order: lesson.order,
+                });
+              }
+            });
+
+            // Sort lessons by order
+            coursesMap.forEach((course) => {
+              course.lessons.sort((a: Lesson, b: Lesson) => a.order - b.order);
+            });
+
+            setCoursesWithLessons(Array.from(coursesMap.values()));
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch progress data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+        <div className="max-w-6xl mx-auto px-4 py-16">
+          <div className="text-center text-gray-500">読み込み中...</div>
+        </div>
+      </main>
+    );
+  }
+
+  if (!user) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+        <div className="max-w-6xl mx-auto px-4 py-16">
+          <div className="text-center">
+            <p className="text-gray-600 mb-4">進捗を確認するにはログインが必要です</p>
+            <Link href="/login" className="text-blue-600 hover:text-blue-800">
+              ログインページへ
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Create progress map for quick lookup
+  const progressMap = new Map<number, Progress>();
+  progressData.forEach((p) => {
+    progressMap.set(p.lessonId, p);
+  });
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -45,8 +158,10 @@ export default async function ProgressPage() {
         <div className="space-y-6">
           {coursesWithLessons.map((course) => {
             const totalLessons = course.lessons.length;
-            // TODO: Calculate completed lessons from database
-            const completedLessons = 0;
+            const completedLessons = course.lessons.filter((lesson) => {
+              const progress = progressMap.get(lesson.id);
+              return progress?.completed;
+            }).length;
             const progressPercentage = totalLessons > 0
               ? Math.round((completedLessons / totalLessons) * 100)
               : 0;
@@ -84,9 +199,9 @@ export default async function ProgressPage() {
                 {/* Lesson List */}
                 <div className="divide-y divide-gray-200">
                   {course.lessons.map((lesson, index) => {
-                    // TODO: Get actual progress from database
-                    const isCompleted = false;
-                    const score = null;
+                    const progress = progressMap.get(lesson.id);
+                    const isCompleted = !!progress?.completed;
+                    const score = progress?.score || null;
 
                     return (
                       <div key={lesson.id} className="p-4 hover:bg-gray-50 transition-colors">
@@ -131,11 +246,13 @@ export default async function ProgressPage() {
         </div>
 
         {/* Info Message */}
-        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-800">
-            💡 現在はローカルストレージに保存された進捗データを表示しています。ログイン機能実装後は、データベースに保存され、どのデバイスからでもアクセスできるようになります。
-          </p>
-        </div>
+        {coursesWithLessons.length === 0 && (
+          <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              コースがまだ登録されていません。
+            </p>
+          </div>
+        )}
       </div>
     </main>
   );

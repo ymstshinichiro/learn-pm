@@ -8,6 +8,16 @@ export default async function CoursesPage() {
   return (
     <main className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
+        {/* Navigation */}
+        <div className="flex gap-4 mb-6">
+          <Link href="/" className="text-blue-600 hover:text-blue-800 text-sm">
+            ← ホームに戻る
+          </Link>
+          <Link href="/dashboard" className="text-blue-600 hover:text-blue-800 text-sm">
+            マイページ
+          </Link>
+        </div>
+
         <h1 className="text-4xl font-bold mb-2">学習コース一覧</h1>
         <p className="text-gray-600 mb-8">あなたの学びたいコースを選択してください</p>
 
