@@ -15,6 +15,7 @@ type QuizProgress = {
   score: number;
   answeredQuestions: number[];
   incorrectQuestions: number[];
+  currentQuestionIndex: number;
   lastUpdated: string;
 };
 
@@ -44,15 +45,19 @@ export default function QuizSection({
       setScore(progress.score);
       setAnsweredQuestions(progress.answeredQuestions);
       setIncorrectQuestions(progress.incorrectQuestions);
+      // Restore question index, but cap it to valid range
+      const validIndex = Math.min(progress.currentQuestionIndex || 0, questions.length - 1);
+      setCurrentQuestionIndex(validIndex);
     }
-  }, [storageKey]);
+  }, [storageKey, questions.length]);
 
   // Save progress to LocalStorage
-  const saveProgress = (newScore: number, newAnswered: number[], newIncorrect: number[]) => {
+  const saveProgress = (newScore: number, newAnswered: number[], newIncorrect: number[], questionIndex: number) => {
     const progress: QuizProgress = {
       score: newScore,
       answeredQuestions: newAnswered,
       incorrectQuestions: newIncorrect,
+      currentQuestionIndex: questionIndex,
       lastUpdated: new Date().toISOString(),
     };
     localStorage.setItem(storageKey, JSON.stringify(progress));
@@ -92,7 +97,7 @@ export default function QuizSection({
       setScore(newScore);
       setAnsweredQuestions(newAnswered);
       setIncorrectQuestions(newIncorrect);
-      saveProgress(newScore, newAnswered, newIncorrect);
+      saveProgress(newScore, newAnswered, newIncorrect, currentQuestionIndex);
     }
 
     setShowResult(true);
@@ -100,9 +105,12 @@ export default function QuizSection({
 
   const handleNext = () => {
     if (!isLastQuestion) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
       setSelectedAnswer(null);
       setShowResult(false);
+      // Save the new index when moving to next question
+      saveProgress(score, answeredQuestions, incorrectQuestions, nextIndex);
     }
   };
 

@@ -73,11 +73,11 @@ export default async function LessonPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Lesson Content */}
           <div className="bg-white rounded-lg shadow p-8">
-            <div className="prose prose-blue max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-700 prose-li:text-gray-700 prose-table:text-sm">
+            <article className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-6 prose-h2:text-2xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-xl prose-h3:font-semibold prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-7 prose-strong:text-gray-900 prose-strong:font-bold prose-ul:my-4 prose-li:text-gray-700 prose-table:w-full prose-table:border-collapse prose-th:border prose-th:border-gray-300 prose-th:bg-gray-100 prose-th:px-4 prose-th:py-2 prose-th:font-semibold prose-td:border prose-td:border-gray-300 prose-td:px-4 prose-td:py-2">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {lesson.content}
               </ReactMarkdown>
-            </div>
+            </article>
           </div>
 
           {/* Right: Quiz Section */}
