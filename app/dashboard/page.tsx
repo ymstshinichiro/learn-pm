@@ -53,9 +53,46 @@ export default function DashboardPage() {
             ? Math.round(totalScore / progressData.length)
             : 0;
 
+          // Calculate completed courses
+          // A course is completed if all its lessons are completed
+          const completedLessonIds = new Set(
+            progressData.filter((p: any) => p.completed).map((p: any) => p.lesson_id)
+          );
+
+          let completedCoursesCount = 0;
+          if (coursesData.courseDetails) {
+            // For each course, check if all lessons are completed
+            const lessonsResponse = await fetch('/api/lessons/by-course');
+            if (lessonsResponse.ok) {
+              const allLessons = await lessonsResponse.json();
+
+              // Group lessons by course
+              const lessonsByCourse = allLessons.reduce((acc: any, lesson: any) => {
+                if (!acc[lesson.course_id]) {
+                  acc[lesson.course_id] = [];
+                }
+                acc[lesson.course_id].push(lesson);
+                return acc;
+              }, {});
+
+              // Check each course
+              for (const courseDetail of coursesData.courseDetails) {
+                const courseLessons = lessonsByCourse[courseDetail.courseId] || [];
+                if (courseLessons.length > 0) {
+                  const allCompleted = courseLessons.every((lesson: any) =>
+                    completedLessonIds.has(lesson.id)
+                  );
+                  if (allCompleted) {
+                    completedCoursesCount++;
+                  }
+                }
+              }
+            }
+          }
+
           setStats({
             totalCourses: coursesData.totalCourses || 0,
-            completedCourses: 0, // TODO: Calculate from completed lessons
+            completedCourses: completedCoursesCount,
             totalLessons: coursesData.totalLessons || 0,
             completedLessons,
             averageScore,
