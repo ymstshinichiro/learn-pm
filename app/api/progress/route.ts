@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const progress = await db
       .select()
       .from(userProgress)
-      .where(eq(userProgress.userId, parseInt(user.id)));
+      .where(eq(userProgress.userId, user.id));
 
     return NextResponse.json(progress);
   } catch (error) {
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     await db
       .insert(userProgress)
       .values({
-        userId: parseInt(user.id),
+        userId: user.id,
         lessonId,
         score,
         completed: completed ? new Date() : null,

@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, integer } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, timestamp, integer, uuid } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -50,7 +50,7 @@ export const questions = pgTable('questions', {
 // Progress tracking tables
 export const userProgress = pgTable('user_progress', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  userId: uuid('user_id').notNull(), // Supabase Auth uses UUID
   lessonId: integer('lesson_id').references(() => lessons.id, { onDelete: 'cascade' }).notNull(),
   completed: timestamp('completed'),
   score: integer('score'),
@@ -59,7 +59,7 @@ export const userProgress = pgTable('user_progress', {
 
 export const testResults = pgTable('test_results', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  userId: uuid('user_id').notNull(), // Supabase Auth uses UUID
   questionId: integer('question_id').references(() => questions.id, { onDelete: 'cascade' }).notNull(),
   userAnswer: text('user_answer').notNull(),
   isCorrect: integer('is_correct').notNull(), // 0 or 1 (boolean as integer)
