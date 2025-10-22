@@ -94,8 +94,13 @@ export default function QuizSection({
         if (incorrectQuestions.includes(currentQuestion.id)) {
           newScore = score + 1;
         }
+      } else {
+        // If still incorrect, ensure it stays in the incorrect list
+        // (it should already be there, but let's be explicit)
+        if (!newIncorrect.includes(currentQuestion.id)) {
+          newIncorrect.push(currentQuestion.id);
+        }
       }
-      // If still incorrect, keep it in the incorrect list (already there)
     } else {
       // Normal mode: only process if not already answered
       if (!answeredQuestions.includes(currentQuestion.id)) {
@@ -366,12 +371,12 @@ export default function QuizSection({
 
             {/* Action Buttons */}
             <div className="space-y-2">
-              {!reviewMode && incorrectQuestions.length > 0 && (
+              {incorrectQuestions.length > 0 && (
                 <button
                   onClick={handleStartReview}
                   className="w-full px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
                 >
-                  間違えた問題を復習 ({incorrectQuestions.length}問)
+                  {reviewMode ? 'もう一度復習する' : '間違えた問題を復習'} ({incorrectQuestions.length}問)
                 </button>
               )}
               <button
