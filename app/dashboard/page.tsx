@@ -56,7 +56,7 @@ export default function DashboardPage() {
           // Calculate completed courses
           // A course is completed if all its lessons are completed
           const completedLessonIds = new Set(
-            progressData.filter((p: any) => p.completed).map((p: any) => p.lesson_id)
+            progressData.filter((p: any) => p.completed).map((p: any) => p.lessonId)
           );
 
           let completedCoursesCount = 0;
@@ -68,10 +68,10 @@ export default function DashboardPage() {
 
               // Group lessons by course
               const lessonsByCourse = allLessons.reduce((acc: any, lesson: any) => {
-                if (!acc[lesson.course_id]) {
-                  acc[lesson.course_id] = [];
+                if (!acc[lesson.courseId]) {
+                  acc[lesson.courseId] = [];
                 }
-                acc[lesson.course_id].push(lesson);
+                acc[lesson.courseId].push(lesson);
                 return acc;
               }, {});
 
