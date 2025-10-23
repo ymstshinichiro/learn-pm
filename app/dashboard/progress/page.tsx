@@ -118,7 +118,7 @@ export default function ProgressPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
         <div className="max-w-6xl mx-auto px-4 py-16">
           <div className="text-center text-gray-500">読み込み中...</div>
         </div>
@@ -128,11 +128,11 @@ export default function ProgressPage() {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
         <div className="max-w-6xl mx-auto px-4 py-16">
           <div className="text-center">
             <p className="text-gray-600 mb-4">進捗を確認するにはログインが必要です</p>
-            <Link href="/login" className="text-blue-600 hover:text-blue-800">
+            <Link href="/login" className="text-primary-600 hover:text-primary-800">
               ログインページへ
             </Link>
           </div>
@@ -148,11 +148,11 @@ export default function ProgressPage() {
   });
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
       <div className="max-w-6xl mx-auto px-4 py-16">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/dashboard" className="text-blue-600 hover:text-blue-800 text-sm mb-4 inline-block">
+          <Link href="/dashboard" className="text-primary-600 hover:text-primary-800 text-sm mb-4 inline-block">
             ← マイページに戻る
           </Link>
           <h1 className="text-4xl font-bold mb-2">学習進捗</h1>
@@ -181,7 +181,7 @@ export default function ProgressPage() {
                       <p className="text-sm text-gray-600">{course.description}</p>
                     </div>
                     <div className="text-right">
-                      <div className="text-3xl font-bold text-blue-600">
+                      <div className="text-3xl font-bold text-primary-600">
                         {progressPercentage}%
                       </div>
                       <div className="text-sm text-gray-500">完了</div>
@@ -191,7 +191,7 @@ export default function ProgressPage() {
                   {/* Progress Bar */}
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      className="bg-primary-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${progressPercentage}%` }}
                     />
                   </div>
@@ -226,7 +226,7 @@ export default function ProgressPage() {
                           <div className="flex items-center gap-4">
                             {score !== null && (
                               <div className="text-right">
-                                <div className="text-lg font-bold text-green-600">
+                                <div className="text-lg font-bold text-secondary-600">
                                   {score}%
                                 </div>
                                 <div className="text-xs text-gray-500">スコア</div>
@@ -235,7 +235,7 @@ export default function ProgressPage() {
 
                             <Link
                               href={`/courses/${course.slug}/lessons/${lesson.slug}`}
-                              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                              className="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors text-sm"
                             >
                               {isCompleted ? '復習する' : '学習する'}
                             </Link>
@@ -252,8 +252,8 @@ export default function ProgressPage() {
 
         {/* Info Message */}
         {coursesWithLessons.length === 0 && (
-          <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
+          <div className="mt-8 p-4 bg-primary-50 border border-primary-200 rounded-lg">
+            <p className="text-sm text-primary-800">
               コースがまだ登録されていません。
             </p>
           </div>

@@ -28,7 +28,7 @@ export default async function CoursePage({ params }: { params: { slug: string } 
       <div className="max-w-4xl mx-auto">
         {/* Breadcrumb */}
         <nav className="mb-6 text-sm">
-          <Link href="/courses" className="text-blue-600 hover:underline">
+          <Link href="/courses" className="text-primary-600 hover:underline">
             コース一覧
           </Link>
           <span className="mx-2 text-gray-400">/</span>
@@ -38,11 +38,11 @@ export default async function CoursePage({ params }: { params: { slug: string } 
         {/* Course Header */}
         <div className="bg-white rounded-lg shadow p-8 mb-6">
           <div className="mb-4 flex items-center gap-2">
-            <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+            <span className="px-3 py-1 bg-primary-100 text-primary-800 text-sm rounded-full">
               {course.category}
             </span>
             {course.isPublic === 1 && (
-              <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+              <span className="px-3 py-1 bg-secondary-100 text-secondary-800 text-sm rounded-full">
                 サンプル（無料公開）
               </span>
             )}
@@ -70,8 +70,8 @@ export default async function CoursePage({ params }: { params: { slug: string } 
                   href={`/courses/${params.slug}/lessons/${lesson.slug}`}
                   className="flex items-center p-6 hover:bg-gray-50 transition-colors"
                 >
-                  <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                    <span className="text-blue-800 font-bold">{index + 1}</span>
+                  <div className="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mr-4">
+                    <span className="text-primary-800 font-bold">{index + 1}</span>
                   </div>
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold mb-1">{lesson.title}</h3>

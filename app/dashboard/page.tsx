@@ -166,7 +166,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
       <div className="max-w-6xl mx-auto px-4 py-16">
         {/* Header */}
         <div className="mb-8">
@@ -178,7 +178,7 @@ export default function DashboardPage() {
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-sm text-gray-500 mb-1">コース進捗</div>
-            <div className="text-3xl font-bold text-blue-600">
+            <div className="text-3xl font-bold text-primary-600">
               {loading ? '...' : `${stats.completedCourses}/${stats.totalCourses}`}
             </div>
             <div className="text-sm text-gray-600 mt-2">完了したコース</div>
@@ -186,7 +186,7 @@ export default function DashboardPage() {
 
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-sm text-gray-500 mb-1">レッスン進捗</div>
-            <div className="text-3xl font-bold text-green-600">
+            <div className="text-3xl font-bold text-secondary-600">
               {loading ? '...' : `${stats.completedLessons}/${stats.totalLessons}`}
             </div>
             <div className="text-sm text-gray-600 mt-2">完了したレッスン</div>
@@ -194,7 +194,7 @@ export default function DashboardPage() {
 
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-sm text-gray-500 mb-1">平均スコア</div>
-            <div className="text-3xl font-bold text-purple-600">
+            <div className="text-3xl font-bold text-accent-600">
               {loading ? '...' : `${stats.averageScore}%`}
             </div>
             <div className="text-sm text-gray-600 mt-2">全レッスンの平均</div>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
           <div className="grid md:grid-cols-2 gap-4">
             <Link
               href="/courses"
-              className="p-4 border-2 border-blue-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors"
+              className="p-4 border-2 border-primary-200 rounded-lg hover:border-primary-400 hover:bg-primary-50 transition-colors"
             >
               <div className="text-2xl mb-2">📚</div>
               <div className="font-semibold">コース一覧</div>
@@ -216,7 +216,7 @@ export default function DashboardPage() {
 
             <Link
               href="/dashboard/progress"
-              className="p-4 border-2 border-green-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-colors"
+              className="p-4 border-2 border-secondary-200 rounded-lg hover:border-secondary-400 hover:bg-secondary-50 transition-colors"
             >
               <div className="text-2xl mb-2">📊</div>
               <div className="font-semibold">進捗詳細</div>
@@ -248,7 +248,7 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <div className="text-sm text-gray-500">スコア</div>
-                      <div className="text-lg font-semibold text-purple-600">{activity.score}%</div>
+                      <div className="text-lg font-semibold text-accent-600">{activity.score}%</div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-gray-500">完了日</div>
