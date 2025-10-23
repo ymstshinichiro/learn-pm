@@ -5,11 +5,14 @@ import { sql, eq } from 'drizzle-orm';
 
 export async function GET() {
   try {
-    // Get all courses with their lesson counts
+    // Get all courses (public and private)
     const allCourses = await db.select().from(courses);
 
+    // Filter only private courses (isPublic = 0) for stats
+    const privateCourses = allCourses.filter(course => course.isPublic === 0);
+
     const coursesWithLessonCount = await Promise.all(
-      allCourses.map(async (course) => {
+      privateCourses.map(async (course) => {
         const lessonCount = await db
           .select({ count: sql<number>`count(*)::int` })
           .from(lessons)
@@ -17,19 +20,28 @@ export async function GET() {
 
         return {
           courseId: course.id,
+          courseSlug: course.slug,
+          courseTitle: course.title,
+          courseDescription: course.description,
           lessonCount: lessonCount[0]?.count || 0,
         };
       })
     );
 
-    // Count total lessons
-    const totalLessonCount = await db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(lessons);
+    // Count total lessons for private courses only
+    const privateCourseIds = privateCourses.map(c => c.id);
+    let totalLessonCount = 0;
+    if (privateCourseIds.length > 0) {
+      const lessonCounts = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(lessons)
+        .where(sql`${lessons.courseId} IN (${sql.join(privateCourseIds.map(id => sql`${id}`), sql`, `)})`);
+      totalLessonCount = lessonCounts[0]?.count || 0;
+    }
 
     return NextResponse.json({
-      totalCourses: allCourses.length,
-      totalLessons: totalLessonCount[0]?.count || 0,
+      totalCourses: privateCourses.length,
+      totalLessons: totalLessonCount,
       courseDetails: coursesWithLessonCount,
     });
   } catch (error) {

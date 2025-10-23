@@ -22,6 +22,7 @@ export const courses = pgTable('courses', {
   title: text('title').notNull(),
   category: text('category').notNull(),
   description: text('description'),
+  isPublic: integer('is_public').notNull().default(0), // 0 = private, 1 = public (sample)
   createdAt: timestamp('created_at').defaultNow(),
 });
 

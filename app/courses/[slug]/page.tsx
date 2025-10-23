@@ -3,6 +3,7 @@ import { courses, lessons } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import LoginRequired from '@/components/LoginRequired';
 
 export default async function CoursePage({ params }: { params: { slug: string } }) {
   // Get course
@@ -19,7 +20,10 @@ export default async function CoursePage({ params }: { params: { slug: string } 
     .where(eq(lessons.courseId, course.id))
     .orderBy(lessons.order);
 
-  return (
+  // Check if course is private (requires login)
+  const isPrivate = course.isPublic === 0;
+
+  const courseContent = (
     <main className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Breadcrumb */}
@@ -33,10 +37,15 @@ export default async function CoursePage({ params }: { params: { slug: string } 
 
         {/* Course Header */}
         <div className="bg-white rounded-lg shadow p-8 mb-6">
-          <div className="mb-4">
+          <div className="mb-4 flex items-center gap-2">
             <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
               {course.category}
             </span>
+            {course.isPublic === 1 && (
+              <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+                サンプル（無料公開）
+              </span>
+            )}
           </div>
           <h1 className="text-4xl font-bold mb-4">{course.title}</h1>
           <p className="text-gray-600 text-lg">{course.description}</p>
@@ -88,4 +97,12 @@ export default async function CoursePage({ params }: { params: { slug: string } 
       </div>
     </main>
   );
+
+  // If course is private, require login
+  if (isPrivate) {
+    return <LoginRequired>{courseContent}</LoginRequired>;
+  }
+
+  // Public course, show directly
+  return courseContent;
 }
