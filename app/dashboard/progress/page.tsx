@@ -53,20 +53,25 @@ export default function ProgressPage() {
           },
         });
 
+        let allProgress: Progress[] = [];
         if (progressResponse.ok) {
-          const progress = await progressResponse.json();
-          setProgressData(progress);
+          allProgress = await progressResponse.json();
         }
 
-        // Fetch all courses
+        // Fetch private courses only
         const coursesResponse = await fetch('/api/courses/stats');
         if (coursesResponse.ok) {
           const coursesData = await coursesResponse.json();
 
-          // Fetch all lessons
+          // Fetch private lessons only
           const lessonsResponse = await fetch('/api/lessons/by-course');
           if (lessonsResponse.ok) {
-            const allLessons = await lessonsResponse.json();
+            const privateLessons = await lessonsResponse.json();
+
+            // Filter progress to only include private course lessons
+            const privateLessonIds = new Set(privateLessons.map((l: any) => l.id));
+            const privateProgress = allProgress.filter(p => privateLessonIds.has(p.lessonId));
+            setProgressData(privateProgress);
 
             // Group lessons by course
             const coursesMap = new Map();
@@ -80,8 +85,8 @@ export default function ProgressPage() {
               });
             });
 
-            // Add lessons to courses
-            allLessons.forEach((lesson: any) => {
+            // Add private lessons to courses
+            privateLessons.forEach((lesson: any) => {
               const course = coursesMap.get(lesson.courseId);
               if (course) {
                 course.lessons.push({

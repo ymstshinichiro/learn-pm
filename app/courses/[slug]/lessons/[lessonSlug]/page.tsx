@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import QuizSection from '@/components/QuizSection';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import LoginRequired from '@/components/LoginRequired';
 
 export default async function LessonPage({
   params,
@@ -48,7 +49,10 @@ export default async function LessonPage({
   const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
   const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
 
-  return (
+  // Check if course is private (requires login)
+  const isPrivate = course.isPublic === 0;
+
+  const lessonContent = (
     <main className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10">
@@ -155,4 +159,12 @@ export default async function LessonPage({
       </div>
     </main>
   );
+
+  // If course is private, require login
+  if (isPrivate) {
+    return <LoginRequired>{lessonContent}</LoginRequired>;
+  }
+
+  // Public course, show directly
+  return lessonContent;
 }

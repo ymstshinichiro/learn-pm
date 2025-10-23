@@ -53,49 +53,53 @@ export default function DashboardPage() {
         if (response.ok) {
           const progressData = await response.json();
 
-          // Fetch course/lesson counts
+          // Fetch course/lesson counts (already filtered to private courses)
           const coursesResponse = await fetch('/api/courses/stats');
           const coursesData = await coursesResponse.json();
 
-          // Calculate stats
-          const completedLessons = progressData.filter((p: any) => p.completed).length;
-          const totalScore = progressData.reduce((sum: number, p: any) => sum + (p.score || 0), 0);
-          const averageScore = progressData.length > 0
-            ? Math.round(totalScore / progressData.length)
+          // Get private lessons to filter progress data
+          const lessonsResponse = await fetch('/api/lessons/by-course');
+          const privateLessons = await lessonsResponse.json();
+          const privateLessonIds = new Set(privateLessons.map((l: any) => l.id));
+
+          // Filter progress data to only include private course lessons
+          const privateProgressData = progressData.filter((p: any) =>
+            privateLessonIds.has(p.lessonId)
+          );
+
+          // Calculate stats (only for private courses)
+          const completedLessons = privateProgressData.filter((p: any) => p.completed).length;
+          const totalScore = privateProgressData.reduce((sum: number, p: any) => sum + (p.score || 0), 0);
+          const averageScore = privateProgressData.length > 0
+            ? Math.round(totalScore / privateProgressData.length)
             : 0;
 
-          // Calculate completed courses
+          // Calculate completed courses (only for private courses)
           // A course is completed if all its lessons are completed
           const completedLessonIds = new Set(
-            progressData.filter((p: any) => p.completed).map((p: any) => p.lessonId)
+            privateProgressData.filter((p: any) => p.completed).map((p: any) => p.lessonId)
           );
 
           let completedCoursesCount = 0;
           if (coursesData.courseDetails) {
-            // For each course, check if all lessons are completed
-            const lessonsResponse = await fetch('/api/lessons/by-course');
-            if (lessonsResponse.ok) {
-              const allLessons = await lessonsResponse.json();
+            // Group private lessons by course
+            const lessonsByCourse = privateLessons.reduce((acc: any, lesson: any) => {
+              if (!acc[lesson.courseId]) {
+                acc[lesson.courseId] = [];
+              }
+              acc[lesson.courseId].push(lesson);
+              return acc;
+            }, {});
 
-              // Group lessons by course
-              const lessonsByCourse = allLessons.reduce((acc: any, lesson: any) => {
-                if (!acc[lesson.courseId]) {
-                  acc[lesson.courseId] = [];
-                }
-                acc[lesson.courseId].push(lesson);
-                return acc;
-              }, {});
-
-              // Check each course
-              for (const courseDetail of coursesData.courseDetails) {
-                const courseLessons = lessonsByCourse[courseDetail.courseId] || [];
-                if (courseLessons.length > 0) {
-                  const allCompleted = courseLessons.every((lesson: any) =>
-                    completedLessonIds.has(lesson.id)
-                  );
-                  if (allCompleted) {
-                    completedCoursesCount++;
-                  }
+            // Check each private course
+            for (const courseDetail of coursesData.courseDetails) {
+              const courseLessons = lessonsByCourse[courseDetail.courseId] || [];
+              if (courseLessons.length > 0) {
+                const allCompleted = courseLessons.every((lesson: any) =>
+                  completedLessonIds.has(lesson.id)
+                );
+                if (allCompleted) {
+                  completedCoursesCount++;
                 }
               }
             }
@@ -109,46 +113,37 @@ export default function DashboardPage() {
             averageScore,
           });
 
-          // Fetch recent activity - get all lessons info and merge with progress
-          const lessonsResponse = await fetch('/api/lessons/by-course');
-          if (lessonsResponse.ok) {
-            const allLessons = await lessonsResponse.json();
-
-            // Get courses info
-            const coursesResponse = await fetch('/api/courses/stats');
-            const coursesInfo = await coursesResponse.json();
-
-            // Create a map of lesson id to lesson/course info
-            const lessonMap = new Map();
-            allLessons.forEach((lesson: any) => {
-              const course = coursesInfo.courseDetails?.find((c: any) => c.courseId === lesson.courseId);
-              lessonMap.set(lesson.id, {
-                lessonTitle: lesson.title,
-                courseTitle: course?.courseTitle || 'コース',
-              });
+          // Create recent activity from private progress data
+          // Create a map of lesson id to lesson/course info
+          const lessonMap = new Map();
+          privateLessons.forEach((lesson: any) => {
+            const course = coursesData.courseDetails?.find((c: any) => c.courseId === lesson.courseId);
+            lessonMap.set(lesson.id, {
+              lessonTitle: lesson.title,
+              courseTitle: course?.courseTitle || 'コース',
             });
+          });
 
-            // Combine progress data with lesson info
-            const activities: RecentActivity[] = progressData
-              .filter((p: any) => p.completed) // Only show completed lessons
-              .map((p: any) => {
-                const lessonInfo = lessonMap.get(p.lessonId);
-                return {
-                  lessonId: p.lessonId,
-                  lessonTitle: lessonInfo?.lessonTitle || 'レッスン',
-                  courseTitle: lessonInfo?.courseTitle || 'コース',
-                  completed: p.completed,
-                  score: p.score || 0,
-                };
-              })
-              .sort((a: any, b: any) => {
-                // Sort by completion date (most recent first)
-                return new Date(b.completed).getTime() - new Date(a.completed).getTime();
-              })
-              .slice(0, 10); // Show the 10 most recent
+          // Combine private progress data with lesson info
+          const activities: RecentActivity[] = privateProgressData
+            .filter((p: any) => p.completed) // Only show completed lessons
+            .map((p: any) => {
+              const lessonInfo = lessonMap.get(p.lessonId);
+              return {
+                lessonId: p.lessonId,
+                lessonTitle: lessonInfo?.lessonTitle || 'レッスン',
+                courseTitle: lessonInfo?.courseTitle || 'コース',
+                completed: p.completed,
+                score: p.score || 0,
+              };
+            })
+            .sort((a: any, b: any) => {
+              // Sort by completion date (most recent first)
+              return new Date(b.completed).getTime() - new Date(a.completed).getTime();
+            })
+            .slice(0, 10); // Show the 10 most recent
 
-            setRecentActivity(activities);
-          }
+          setRecentActivity(activities);
         }
       } catch (error) {
         console.error('Failed to fetch stats:', error);
