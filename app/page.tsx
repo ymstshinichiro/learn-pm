@@ -214,49 +214,9 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-gray-900 text-gray-400">
+      <footer className="py-8 bg-gray-900 text-gray-400">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="text-white text-lg font-bold mb-4">Learn PM</h3>
-              <p className="text-sm">
-                プロジェクトマネジメントを学ぶ、
-                <br />
-                汎用学習プラットフォーム
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">学習</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="/courses" className="hover:text-white transition-colors">
-                    コース一覧
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/signup" className="hover:text-white transition-colors">
-                    新規登録
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">アカウント</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="/login" className="hover:text-white transition-colors">
-                    ログイン
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard" className="hover:text-white transition-colors">
-                    マイページ
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-sm">
+          <div className="text-center text-sm">
             <p>&copy; 2025 Learn PM. All rights reserved.</p>
           </div>
         </div>
