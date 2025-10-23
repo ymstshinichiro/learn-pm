@@ -38,10 +38,30 @@ export default function SignupForm() {
       await signUp(email, password, name);
       setSuccess(true);
       setTimeout(() => {
-        router.push('/auth/login');
+        router.push('/login');
       }, 3000);
     } catch (err: any) {
-      setError(err.message || '登録に失敗しました');
+      // Parse Supabase error messages and convert to Japanese
+      let errorMessage = '登録に失敗しました';
+
+      if (err.message) {
+        if (err.message.includes('already registered') || err.message.includes('User already registered')) {
+          errorMessage = 'このメールアドレスは既に登録されています';
+        } else if (err.message.includes('Invalid email')) {
+          errorMessage = 'メールアドレスの形式が正しくありません';
+        } else if (err.message.includes('Password')) {
+          errorMessage = 'パスワードの形式が正しくありません';
+        } else if (err.message.includes('network') || err.message.includes('fetch')) {
+          errorMessage = 'ネットワークエラーが発生しました。もう一度お試しください';
+        } else {
+          // Show original error in development, user-friendly message in production
+          errorMessage = process.env.NODE_ENV === 'development'
+            ? `登録エラー: ${err.message}`
+            : '登録に失敗しました。しばらく経ってから再度お試しください';
+        }
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -136,7 +156,7 @@ export default function SignupForm() {
         </div>
 
         <div className="text-center">
-          <Link href="/auth/login" className="text-blue-600 hover:text-blue-800 text-sm">
+          <Link href="/login" className="text-blue-600 hover:text-blue-800 text-sm">
             すでにアカウントをお持ちの方はこちら
           </Link>
         </div>

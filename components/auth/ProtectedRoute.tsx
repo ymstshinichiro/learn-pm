@@ -15,7 +15,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     if (!loading && !user) {
       // Redirect to login if not authenticated
-      router.push('/auth/login');
+      router.push('/login');
     }
   }, [user, loading, router]);
 
