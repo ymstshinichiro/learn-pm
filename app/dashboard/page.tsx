@@ -163,7 +163,8 @@ export default function DashboardPage() {
   const handleLogout = async () => {
     try {
       await signOut();
-      router.push('/');
+      // Use window.location to force full page reload and avoid ProtectedRoute redirect
+      window.location.href = '/';
     } catch (error) {
       console.error('Failed to sign out:', error);
     }

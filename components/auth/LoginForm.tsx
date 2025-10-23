@@ -22,7 +22,27 @@ export default function LoginForm() {
       await signIn(email, password);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'ログインに失敗しました');
+      // Parse Supabase error messages and convert to Japanese
+      let errorMessage = 'ログインに失敗しました';
+
+      if (err.message) {
+        if (err.message.includes('Invalid login credentials') || err.message.includes('Invalid email or password')) {
+          errorMessage = 'メールアドレスまたはパスワードが正しくありません';
+        } else if (err.message.includes('Email not confirmed')) {
+          errorMessage = 'メールアドレスが確認されていません。確認メールをご確認ください';
+        } else if (err.message.includes('Invalid email')) {
+          errorMessage = 'メールアドレスの形式が正しくありません';
+        } else if (err.message.includes('network') || err.message.includes('fetch')) {
+          errorMessage = 'ネットワークエラーが発生しました。もう一度お試しください';
+        } else {
+          // Show original error in development, user-friendly message in production
+          errorMessage = process.env.NODE_ENV === 'development'
+            ? `ログインエラー: ${err.message}`
+            : 'ログインに失敗しました。しばらく経ってから再度お試しください';
+        }
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -80,7 +100,7 @@ export default function LoginForm() {
         </div>
 
         <div className="text-center">
-          <Link href="/auth/signup" className="text-blue-600 hover:text-blue-800 text-sm">
+          <Link href="/signup" className="text-blue-600 hover:text-blue-800 text-sm">
             アカウントをお持ちでない方はこちら
           </Link>
         </div>
