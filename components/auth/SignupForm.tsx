@@ -79,7 +79,7 @@ export default function SignupForm() {
         )}
 
         {success && (
-          <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+          <div className="mb-4 p-3 bg-secondary-50 border border-secondary-200 text-green-700 rounded-lg text-sm">
             登録が完了しました！確認メールをご確認ください。ログインページに移動します...
           </div>
         )}
@@ -93,7 +93,7 @@ export default function SignupForm() {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="山田太郎"
             required
           />
@@ -108,7 +108,7 @@ export default function SignupForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="example@email.com"
             required
           />
@@ -123,7 +123,7 @@ export default function SignupForm() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="••••••••"
             required
           />
@@ -139,7 +139,7 @@ export default function SignupForm() {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="••••••••"
             required
           />
@@ -149,14 +149,14 @@ export default function SignupForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {loading ? '登録中...' : '登録'}
           </button>
         </div>
 
         <div className="text-center">
-          <Link href="/login" className="text-blue-600 hover:text-blue-800 text-sm">
+          <Link href="/login" className="text-primary-600 hover:text-primary-800 text-sm">
             すでにアカウントをお持ちの方はこちら
           </Link>
         </div>

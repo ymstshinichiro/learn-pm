@@ -64,11 +64,11 @@ export default function CoursesPage() {
       <div className="max-w-4xl mx-auto">
         {/* Navigation */}
         <div className="flex gap-4 mb-6">
-          <Link href="/" className="text-blue-600 hover:text-blue-800 text-sm">
+          <Link href="/" className="text-primary-600 hover:text-primary-800 text-sm">
             ← ホームに戻る
           </Link>
           {user && (
-            <Link href="/dashboard" className="text-blue-600 hover:text-blue-800 text-sm">
+            <Link href="/dashboard" className="text-primary-600 hover:text-primary-800 text-sm">
               マイページ
             </Link>
           )}
@@ -92,13 +92,13 @@ export default function CoursesPage() {
                 <div className="flex gap-4 justify-center">
                   <Link
                     href="/login"
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                   >
                     ログイン
                   </Link>
                   <Link
                     href="/signup"
-                    className="px-6 py-2 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                    className="px-6 py-2 border-2 border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
                   >
                     新規登録（無料）
                   </Link>
@@ -117,11 +117,11 @@ export default function CoursesPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                      <span className="px-3 py-1 bg-primary-100 text-primary-800 text-sm rounded-full">
                         {course.category}
                       </span>
                       {course.isPublic === 1 && (
-                        <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+                        <span className="px-3 py-1 bg-secondary-100 text-secondary-800 text-sm rounded-full">
                           無料サンプル
                         </span>
                       )}

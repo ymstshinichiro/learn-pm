@@ -221,10 +221,10 @@ export default function QuizSection({
   return (
     <div className="space-y-6">
       {/* Stats Panel */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+      <div className="bg-gradient-to-r from-primary-50 to-indigo-50 rounded-lg p-4 border border-primary-200">
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <div className="text-2xl font-bold text-blue-600">{score}</div>
+            <div className="text-2xl font-bold text-primary-600">{score}</div>
             <div className="text-xs text-gray-600">正解数</div>
           </div>
           <div>
@@ -232,7 +232,7 @@ export default function QuizSection({
             <div className="text-xs text-gray-600">回答済み</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-purple-600">{correctRate}%</div>
+            <div className="text-2xl font-bold text-accent-600">{correctRate}%</div>
             <div className="text-xs text-gray-600">正答率</div>
           </div>
         </div>
@@ -269,7 +269,7 @@ export default function QuizSection({
       <div className="w-full bg-gray-200 rounded-full h-2">
         <div
           className={`h-2 rounded-full transition-all duration-300 ${
-            reviewMode ? 'bg-orange-600' : 'bg-blue-600'
+            reviewMode ? 'bg-orange-600' : 'bg-primary-600'
           }`}
           style={{
             width: `${((currentQuestionIndex + 1) / currentQuestions.length) * 100}%`,
@@ -281,7 +281,7 @@ export default function QuizSection({
       <div>
         <div className="mb-2">
           {currentQuestion.type === 'multiple-answer' && (
-            <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full">
+            <span className="inline-block px-3 py-1 bg-accent-100 text-purple-700 text-sm rounded-full">
               複数選択（正しいものをすべて選んでください）
             </span>
           )}
@@ -298,11 +298,11 @@ export default function QuizSection({
 
             if (!showResult) {
               optionClass += isSelected
-                ? 'border-blue-600 bg-blue-50'
+                ? 'border-primary-600 bg-primary-50'
                 : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50';
             } else {
               if (isCorrectOption) {
-                optionClass += 'border-green-500 bg-green-50';
+                optionClass += 'border-secondary-500 bg-secondary-50';
               } else if (isSelected && !isCorrect) {
                 optionClass += 'border-red-500 bg-red-50';
               } else {
@@ -322,7 +322,7 @@ export default function QuizSection({
                     currentQuestion.type === 'multiple-answer' ? 'rounded-md' : 'rounded-full'
                   }`}>
                     {showResult && isCorrectOption ? (
-                      <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-5 h-5 text-secondary-600" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
                           d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -353,13 +353,13 @@ export default function QuizSection({
       {showResult && (
         <div
           className={`p-4 rounded-lg ${
-            isCorrect ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+            isCorrect ? 'bg-secondary-50 border border-secondary-200' : 'bg-red-50 border border-red-200'
           }`}
         >
           <div className="flex items-start">
             <div className="flex-shrink-0">
               {isCorrect ? (
-                <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-6 h-6 text-secondary-600" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -377,7 +377,7 @@ export default function QuizSection({
               )}
             </div>
             <div className="ml-3 flex-1">
-              <h4 className={`font-semibold mb-1 ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>
+              <h4 className={`font-semibold mb-1 ${isCorrect ? 'text-secondary-800' : 'text-red-800'}`}>
                 {isCorrect ? '正解！' : '不正解'}
               </h4>
               {currentQuestion.explanation && (
@@ -394,26 +394,26 @@ export default function QuizSection({
           <button
             onClick={handleSubmit}
             disabled={selectedAnswers.length === 0}
-            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
             回答する
           </button>
         ) : !isLastQuestion ? (
           <button
             onClick={handleNext}
-            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors"
           >
             次の問題へ
           </button>
         ) : (
           <div className="flex-1 space-y-3">
             {/* Completion Stats */}
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-4 bg-primary-50 border border-primary-200 rounded-lg">
               <div className="text-center mb-3">
                 <p className="text-2xl font-bold text-blue-900">
                   {reviewMode ? '復習完了！' : 'クイズ完了！'}
                 </p>
-                <p className="text-sm text-blue-700 mt-1">
+                <p className="text-sm text-primary-700 mt-1">
                   スコア: {score} / {answeredQuestions.length} ({correctRate}%)
                 </p>
               </div>
@@ -422,7 +422,7 @@ export default function QuizSection({
               {!reviewMode && (
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="bg-white rounded p-2 text-center">
-                    <div className="font-semibold text-green-600">{score}</div>
+                    <div className="font-semibold text-secondary-600">{score}</div>
                     <div className="text-xs text-gray-600">正解</div>
                   </div>
                   <div className="bg-white rounded p-2 text-center">

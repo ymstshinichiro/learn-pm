@@ -58,11 +58,11 @@ export default async function LessonPage({
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <nav className="text-sm mb-2">
-            <Link href="/courses" className="text-blue-600 hover:underline">
+            <Link href="/courses" className="text-primary-600 hover:underline">
               コース一覧
             </Link>
             <span className="mx-2 text-gray-400">/</span>
-            <Link href={`/courses/${params.slug}`} className="text-blue-600 hover:underline">
+            <Link href={`/courses/${params.slug}`} className="text-primary-600 hover:underline">
               {course.title}
             </Link>
             <span className="mx-2 text-gray-400">/</span>
@@ -127,10 +127,10 @@ export default async function LessonPage({
           {nextLesson ? (
             <Link
               href={`/courses/${params.slug}/lessons/${nextLesson.slug}`}
-              className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors"
+              className="flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg shadow hover:bg-primary-700 transition-colors"
             >
               <div className="text-right">
-                <div className="text-sm text-blue-100">次のレッスン</div>
+                <div className="text-sm text-primary-100">次のレッスン</div>
                 <div className="font-semibold">{nextLesson.title}</div>
               </div>
               <svg
@@ -150,7 +150,7 @@ export default async function LessonPage({
           ) : (
             <Link
               href={`/courses/${params.slug}`}
-              className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition-colors"
+              className="px-6 py-3 bg-secondary-600 text-white rounded-lg shadow hover:bg-green-700 transition-colors"
             >
               コースに戻る
             </Link>
