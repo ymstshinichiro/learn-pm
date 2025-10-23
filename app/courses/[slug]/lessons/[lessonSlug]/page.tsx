@@ -58,8 +58,8 @@ export default async function LessonPage({
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <nav className="text-sm mb-2">
-            <Link href="/courses" className="text-primary-600 hover:underline">
-              コース一覧
+            <Link href="/dashboard" className="text-primary-600 hover:underline">
+              ダッシュボード
             </Link>
             <span className="mx-2 text-gray-400">/</span>
             <Link href={`/courses/${params.slug}`} className="text-primary-600 hover:underline">
