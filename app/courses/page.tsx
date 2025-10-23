@@ -69,7 +69,7 @@ export default function CoursesPage() {
           </Link>
           {user && (
             <Link href="/dashboard" className="text-primary-600 hover:text-primary-800 text-sm">
-              マイページ
+              ダッシュボード
             </Link>
           )}
         </div>

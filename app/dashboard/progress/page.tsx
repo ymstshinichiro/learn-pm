@@ -153,7 +153,7 @@ export default function ProgressPage() {
         {/* Header */}
         <div className="mb-8">
           <Link href="/dashboard" className="text-primary-600 hover:text-primary-800 text-sm mb-4 inline-block">
-            ← マイページに戻る
+            ← ダッシュボードに戻る
           </Link>
           <h1 className="text-4xl font-bold mb-2">学習進捗</h1>
           <p className="text-gray-600">コース別の詳しい進捗状況</p>

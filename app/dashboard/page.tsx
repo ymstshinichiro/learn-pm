@@ -18,6 +18,8 @@ type RecentActivity = {
   lessonId: number;
   lessonTitle: string;
   courseTitle: string;
+  courseSlug: string;
+  lessonSlug: string;
   completed: string | null;
   score: number;
 };
@@ -120,7 +122,9 @@ export default function DashboardPage() {
             const course = coursesData.courseDetails?.find((c: any) => c.courseId === lesson.courseId);
             lessonMap.set(lesson.id, {
               lessonTitle: lesson.title,
+              lessonSlug: lesson.slug,
               courseTitle: course?.courseTitle || 'コース',
+              courseSlug: course?.courseSlug || '',
             });
           });
 
@@ -132,7 +136,9 @@ export default function DashboardPage() {
               return {
                 lessonId: p.lessonId,
                 lessonTitle: lessonInfo?.lessonTitle || 'レッスン',
+                lessonSlug: lessonInfo?.lessonSlug || '',
                 courseTitle: lessonInfo?.courseTitle || 'コース',
+                courseSlug: lessonInfo?.courseSlug || '',
                 completed: p.completed,
                 score: p.score || 0,
               };
@@ -170,7 +176,7 @@ export default function DashboardPage() {
       <div className="max-w-6xl mx-auto px-4 py-16">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">マイページ</h1>
+          <h1 className="text-4xl font-bold mb-2">ダッシュボード</h1>
           <p className="text-gray-600">こんにちは、{user?.name || user?.email}さん</p>
         </div>
 
@@ -237,9 +243,10 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-3">
               {recentActivity.map((activity) => (
-                <div
+                <Link
                   key={`${activity.lessonId}-${activity.completed}`}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                  href={`/courses/${activity.courseSlug}/lessons/${activity.lessonSlug}`}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 hover:border-primary-300 transition-colors cursor-pointer"
                 >
                   <div className="flex-1">
                     <div className="font-semibold text-gray-900">{activity.lessonTitle}</div>
@@ -263,7 +270,7 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
