@@ -12,7 +12,6 @@ export default function SignupForm() {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const { signUp } = useAuth();
   const router = useRouter();
 
@@ -36,10 +35,8 @@ export default function SignupForm() {
 
     try {
       await signUp(email, password, name);
-      setSuccess(true);
-      setTimeout(() => {
-        router.push('/login');
-      }, 3000);
+      // メール確認画面にリダイレクト
+      router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
     } catch (err: any) {
       // Parse Supabase error messages and convert to Japanese
       let errorMessage = '登録に失敗しました';
@@ -75,12 +72,6 @@ export default function SignupForm() {
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
             {error}
-          </div>
-        )}
-
-        {success && (
-          <div className="mb-4 p-3 bg-secondary-50 border border-secondary-200 text-green-700 rounded-lg text-sm">
-            登録が完了しました！確認メールをご確認ください。ログインページに移動します...
           </div>
         )}
 
