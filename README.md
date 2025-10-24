@@ -8,13 +8,19 @@ Next.js + PostgreSQL + Drizzle ORM を使用したプロジェクト管理学習
 - **フレームワーク**: Next.js 14 (App Router)
 - **データベース**: PostgreSQL 16 (Docker)
 - **ORM**: Drizzle ORM
+- **認証**: Supabase Auth
 - **スタイリング**: Tailwind CSS
 - **コンテナ**: Docker + Docker Compose
 
 ### 本番環境
 - **ホスティング**: Vercel
 - **データベース**: Supabase (PostgreSQL)
+- **認証**: Supabase Auth
 - **デプロイ**: Git Push to Deploy
+
+### データ構成
+- **ユーザー情報**: Supabase Auth (auth.users) で管理
+- **学習データ**: PostgreSQL (courses, lessons, questions, user_progress, test_results)
 
 ## セットアップ
 
@@ -96,8 +102,10 @@ docker-compose exec app npm run db:studio
 
 - **Runtime**: Node.js 20
 - **Language**: TypeScript
+- **Framework**: Next.js 14
 - **Database**: PostgreSQL 16
 - **ORM**: Drizzle ORM
+- **Authentication**: Supabase Auth
 - **Containerization**: Docker, Docker Compose
 
 ## トラブルシューティング
@@ -150,6 +158,7 @@ docker-compose up -d
      - `DATABASE_URL`
      - `NEXT_PUBLIC_SUPABASE_URL`
      - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+     - `NEXT_PUBLIC_SITE_URL` (例: https://learn-pm.vercel.app)
 
 3. **デプロイ完了**
    - https://learn-pm.vercel.app にアクセス
