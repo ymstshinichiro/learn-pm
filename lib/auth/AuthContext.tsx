@@ -56,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, name?: string) => {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -63,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: {
           name,
         },
+        emailRedirectTo: `${siteUrl}/auth/callback`,
       },
     });
 
