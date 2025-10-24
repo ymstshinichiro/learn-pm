@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth/AuthContext';
+import Navigation from '@/components/navigation/Navigation';
 
 type Course = {
   id: number;
@@ -51,28 +52,22 @@ export default function CoursesPage() {
 
   if (authLoading || loading) {
     return (
-      <main className="min-h-screen bg-gray-50 py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center text-gray-500">読み込み中...</div>
-        </div>
-      </main>
+      <>
+        <Navigation />
+        <main className="min-h-screen bg-gray-50 py-12 px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center text-gray-500">読み込み中...</div>
+          </div>
+        </main>
+      </>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Navigation */}
-        <div className="flex gap-4 mb-6">
-          <Link href="/" className="text-primary-600 hover:text-primary-800 text-sm">
-            ← ホームに戻る
-          </Link>
-          {user && (
-            <Link href="/dashboard" className="text-primary-600 hover:text-primary-800 text-sm">
-              ダッシュボード
-            </Link>
-          )}
-        </div>
+    <>
+      <Navigation />
+      <main className="min-h-screen bg-gray-50 py-12 px-4">
+        <div className="max-w-4xl mx-auto">
 
         <h1 className="text-4xl font-bold mb-2">学習コース一覧</h1>
         <p className="text-gray-600 mb-8">
@@ -149,5 +144,6 @@ export default function CoursesPage() {
         )}
       </div>
     </main>
+    </>
   );
 }

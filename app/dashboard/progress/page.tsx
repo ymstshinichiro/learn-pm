@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { supabase } from '@/lib/supabase/client';
+import Navigation from '@/components/navigation/Navigation';
 
 type Lesson = {
   id: number;
@@ -118,26 +119,32 @@ export default function ProgressPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
-        <div className="max-w-6xl mx-auto px-4 py-16">
-          <div className="text-center text-gray-500">読み込み中...</div>
-        </div>
-      </main>
+      <>
+        <Navigation />
+        <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
+          <div className="max-w-6xl mx-auto px-4 py-16">
+            <div className="text-center text-gray-500">読み込み中...</div>
+          </div>
+        </main>
+      </>
     );
   }
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
-        <div className="max-w-6xl mx-auto px-4 py-16">
-          <div className="text-center">
-            <p className="text-gray-600 mb-4">進捗を確認するにはログインが必要です</p>
-            <Link href="/login" className="text-primary-600 hover:text-primary-800">
-              ログインページへ
-            </Link>
+      <>
+        <Navigation />
+        <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
+          <div className="max-w-6xl mx-auto px-4 py-16">
+            <div className="text-center">
+              <p className="text-gray-600 mb-4">進捗を確認するにはログインが必要です</p>
+              <Link href="/login" className="text-primary-600 hover:text-primary-800">
+                ログインページへ
+              </Link>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </>
     );
   }
 
@@ -148,13 +155,15 @@ export default function ProgressPage() {
   });
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        {/* Header */}
-        <div className="mb-8">
-          <Link href="/dashboard" className="text-primary-600 hover:text-primary-800 text-sm mb-4 inline-block">
-            ← ダッシュボードに戻る
-          </Link>
+    <>
+      <Navigation />
+      <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
+        <div className="max-w-6xl mx-auto px-4 py-16">
+          {/* Header */}
+          <div className="mb-8">
+            <Link href="/dashboard" className="text-primary-600 hover:text-primary-800 text-sm mb-4 inline-block">
+              ← ダッシュボードに戻る
+            </Link>
           <h1 className="text-4xl font-bold mb-2">学習進捗</h1>
           <p className="text-gray-600">コース別の詳しい進捗状況</p>
         </div>
@@ -260,5 +269,6 @@ export default function ProgressPage() {
         )}
       </div>
     </main>
+    </>
   );
 }

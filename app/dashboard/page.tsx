@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { supabase } from '@/lib/supabase/client';
+import Navigation from '@/components/navigation/Navigation';
 
 type Stats = {
   totalCourses: number;
@@ -172,13 +173,15 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">ダッシュボード</h1>
-          <p className="text-gray-600">こんにちは、{user?.name || user?.email}さん</p>
-        </div>
+    <>
+      <Navigation />
+      <main className="min-h-screen bg-gradient-to-b from-primary-50 to-white">
+        <div className="max-w-6xl mx-auto px-4 py-16">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-2">ダッシュボード</h1>
+            <p className="text-gray-600">こんにちは、{user?.name || user?.email}さん</p>
+          </div>
 
         {/* Stats Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
@@ -287,5 +290,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </main>
+    </>
   );
 }
